@@ -7,6 +7,7 @@ import datetime
 from sklearn.ensemble import RandomForestClassifier
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 import plotly.express as px
 import shap
 import numpy as np
@@ -135,38 +136,57 @@ if st.sidebar.button("Graphique univarié") :
         
         point = client_data[[columns_selected1, columns_selected2]]
         
-        # Créez les deux graphes avec Plotly
-        fig1 = px.box(df1, x='column_values')
-        fig2 = px.box(df2, x='column_values')
+        ## Graphique pour la variable 1
         
+        # Créez les deux graphes avec Plotly
+        box1 = go.Box(x=df1['column_values'], name='Jeu de données')
+          
         # Créez un trace avec les données du client
         trace1 = go.Scatter(x=point[columns_selected1], y=[0], mode='markers', name='Client', marker=dict(color='#e7298a', size=10))
-        trace2 = go.Scatter(x=point[columns_selected2], y=[0], mode='markers', name='Client', marker=dict(color='#e7298a', size=10))
+
         
-        # Ajoutez le trace au figure existant
-        fig1.add_trace(trace1)
-        fig2.add_trace(trace2)
+        fig_var1 = make_subplots(specs=[[{"secondary_y": True}]])
+        fig_var1.add_trace(box1)
+        fig_var1.add_trace(trace1,secondary_y=True)
+
         
-        fig1.update_layout(
+        fig_var1.update_layout(
             title=f"Plot du boxplot de la variable {columns_selected1}",
             xaxis_title= f"La variable {columns_selected1}",
             legend_title="Legend Title"
 )
         
         
-        fig2.update_layout(
+        ## Graphique pour la variable 2
+        
+        # Créez les deux graphes avec Plotly
+        box2 = go.Box(x=df2['column_values'], name='Jeu de données')
+          
+        # Créez un trace avec les données du client
+        trace2 = go.Scatter(x=point[columns_selected2], y=[0], mode='markers', name='Client', marker=dict(color='#e7298a', size=10))
+
+        
+        fig_var2 = make_subplots(specs=[[{"secondary_y": True}]])
+        fig_var2.add_trace(box2)
+        fig_var2.add_trace(trace1,secondary_y=True)
+
+        
+        fig_var2.update_layout(
             title=f"Plot du boxplot de la variable {columns_selected2}",
             xaxis_title= f"La variable {columns_selected2}",
             legend_title="Legend Title"
 )
+        
+        
+
 
 
 
 
 
         # Affichez les figures côte à côte
-        st.plotly_chart(fig1)
-        st.plotly_chart(fig2)
+        st.plotly_chart(fig_var1)
+        st.plotly_chart(fig_var2)
         
     
     
