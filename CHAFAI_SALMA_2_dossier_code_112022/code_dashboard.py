@@ -2,7 +2,6 @@ import streamlit as st
 import json
 import requests
 import pandas as pd
-from sklearn import datasets
 import datetime
 from sklearn.ensemble import RandomForestClassifier
 import matplotlib.pyplot as plt

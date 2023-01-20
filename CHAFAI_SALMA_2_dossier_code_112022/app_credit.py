@@ -5,7 +5,7 @@ import uvicorn
 import numpy as np
 import pandas as pd
 from pydantic import BaseModel
-from typing import List, Dict
+#from typing import List, Dict
 import pickle
 import dill
 from fastapi import FastAPI
