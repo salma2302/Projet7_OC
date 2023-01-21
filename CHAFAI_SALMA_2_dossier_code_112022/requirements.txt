@@ -9,6 +9,4 @@ uvicorn==0.20.0
 joblib==1.2.0
 dill==0.3.5.1
 shap==0.41.0
-altair==4.2.0
-pickle
 datetime
