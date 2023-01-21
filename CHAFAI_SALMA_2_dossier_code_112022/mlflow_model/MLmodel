@@ -1,0 +1,30 @@
+flavors:
+  python_function:
+    env: conda.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.9.13
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.0.2
+mlflow_version: 1.30.0
+model_uuid: ac5db8ca216f485ab9e3eb5e3ec68e51
+signature:
+  inputs: '[{"name": "DAYS_BIRTH", "type": "integer"}, {"name": "DAYS_EMPLOYED", "type":
+    "float"}, {"name": "REGION_RATING_CLIENT", "type": "integer"}, {"name": "REGION_RATING_CLIENT_W_CITY",
+    "type": "integer"}, {"name": "EXT_SOURCE_1", "type": "float"}, {"name": "EXT_SOURCE_2",
+    "type": "float"}, {"name": "EXT_SOURCE_3", "type": "float"}, {"name": "DAYS_EMPLOYED_PERC",
+    "type": "float"}, {"name": "NAME_INCOME_TYPE_Working", "type": "float"}, {"name":
+    "NAME_EDUCATION_TYPE_Higher education", "type": "float"}, {"name": "BURO_DAYS_CREDIT_MIN",
+    "type": "float"}, {"name": "BURO_DAYS_CREDIT_MEAN", "type": "float"}, {"name":
+    "BURO_DAYS_CREDIT_UPDATE_MEAN", "type": "float"}, {"name": "BURO_CREDIT_ACTIVE_Active_MEAN",
+    "type": "float"}, {"name": "BURO_CREDIT_ACTIVE_Closed_MEAN", "type": "float"},
+    {"name": "PREV_NAME_CONTRACT_STATUS_Approved_MEAN", "type": "float"}, {"name":
+    "PREV_NAME_CONTRACT_STATUS_Refused_MEAN", "type": "float"}, {"name": "PREV_CODE_REJECT_REASON_SCOFR_MEAN",
+    "type": "float"}, {"name": "PREV_CODE_REJECT_REASON_XAP_MEAN", "type": "float"},
+    {"name": "PREV_NAME_PRODUCT_TYPE_walk-in_MEAN", "type": "float"}]'
+  outputs: '[{"name": "TARGET", "type": "integer"}]'
+utc_time_created: '2023-01-21 00:00:40.159398'
