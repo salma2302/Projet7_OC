@@ -4,8 +4,6 @@ import joblib
 import uvicorn
 import numpy as np
 import pandas as pd
-from pydantic import BaseModel
-#from typing import List, Dict
 import pickle
 import dill
 from fastapi import FastAPI
@@ -43,7 +41,7 @@ def get_dataframe():
 @app.get("/model")
 def get_model():
     
-    pickle_in = open("model_credit_rf.pkl","rb")
+    pickle_in = open("model_credit.pkl","rb")
     classifier=pickle.load(pickle_in)
     
     return {"model": classifier}
@@ -52,12 +50,6 @@ def get_model():
 
 # Le jeu de données
 df = pd.DataFrame(get_dataframe()['data'])
-
-
-# Téléchargement de shap explainer
-#explainer = pickle.load(open("shap_explainer.pkl","rb"))
-#shap_explainer = dill.load(open("shap_explainer_fr.dill","rb"))
-
 
 
 # Récupérer la liste des colonnes du jeu de données
@@ -129,18 +121,21 @@ def predict(id_client: int):
     
     classifier = get_model()['model']
     
-    prediction = classifier.predict(X_test)
+    # Prédire la probabilité pour le client
     pred_proba = classifier.predict_proba(X_test)
+
+    # Le seuil choisit avec la fonction personnalisée
+    seuil_optimal = 0.62
     
-    # Map prediction to appropriate label
-    prediction_label = ["accordé" if prediction == 0 else "refusé"]
+    # La prédiction en fonction du seuil
+    prediction_label = ["accordé" if pred_proba[0][0] > seuil_optimal else "refusé"]
     # Return response back to client
     return {"prediction": prediction_label[0],
-           "probabilité" : round(max(pred_proba[0]),2)}
+           "probabilité" : pred_proba[0][0]}
 
 
-@app.get("/X_data")
-def get_data():
+@app.get("/get_X_test")
+def get_X_test():
     # sélectionner les colonnes spécifiées du DataFrame
     # Chargement d'un échantillon de 100 clients
     
@@ -149,18 +144,17 @@ def get_data():
     cols = features_selected
     df_selected = df[cols]
     
+    
+    
     # convertir le DataFrame en dictionnaire
     data = df_selected.to_dict(orient="records")
     
     return {"data": data}
 
-# A revoir
-#@app.post('/test_data')
-#def test_data(id_client: int):
-    # Récupérez les données d'entrée pour le client sélectionné
-#    ligne = df[df['SK_ID_CURR'] == id_client]
-#    X_test = ligne[features_selected]
-#    return X_test
+
+
+
+
 
 
 
