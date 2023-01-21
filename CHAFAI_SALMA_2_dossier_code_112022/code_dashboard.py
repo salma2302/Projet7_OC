@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import plotly.express as px
+from PIL import Image
 import shap
 import numpy as np
 import pickle
@@ -17,7 +18,10 @@ st.title("Prédiction de l'accord d'un crédit d'un client ")
 #st.subheader("Données des cliens")
 st.markdown(":tada: Cette application affiche si on accorde ou non un prêt à un client ")
 
-st.image("photo_entreprise.png", width=200)
+
+#--------------image-----------------------------------------
+img = Image.open("photo_entreprise.png")
+st.image(img, width=200)
 
 
 
