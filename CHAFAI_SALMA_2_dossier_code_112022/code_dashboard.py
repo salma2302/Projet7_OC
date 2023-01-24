@@ -13,15 +13,17 @@ import numpy as np
 import pickle
 import dill
 
-#Application hello word
+
 st.title("Prédiction de l'accord d'un crédit d'un client ")
 #st.subheader("Données des cliens")
 st.markdown(":tada: Cette application affiche si on accorde ou non un prêt à un client ")
 
 
 #--------------image-----------------------------------------
-img = Image.open("photo_entreprise.png")
+img = "photo_entreprise.png"
 st.image(img, width=200)
+
+
 
 
 
@@ -220,7 +222,7 @@ if st.sidebar.button("predict") :
     prediction = res.json()
     
     
-    st.success(f"Le crédit est {prediction['prediction']} avec une proba de {prediction['probabilité']} d'appartenance à la classe 0 ('solvable') pour le client avec l'id {id_selected}")
+    st.success(f"Le crédit est {prediction['prediction']} avec une proba de {prediction['probabilité']} basée sur un seuil optimal {prediction['seuil_optimal']} pour le client avec l'id {id_selected}")
     
        
 
