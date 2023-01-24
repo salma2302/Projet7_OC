@@ -12,7 +12,7 @@ import numpy as np
 import pickle
 import dill
 
-#Application hello word
+
 st.title("Prédiction de l'accord d'un crédit d'un client ")
 #st.subheader("Données des cliens")
 st.markdown(":tada: Cette application affiche si on accorde ou non un prêt à un client ")
