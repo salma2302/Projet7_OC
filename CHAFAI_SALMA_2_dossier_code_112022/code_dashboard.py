@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import plotly.express as px
+from PIL import Image
 import shap
 import numpy as np
 import pickle
@@ -26,18 +27,30 @@ st.image("photo_entreprise.png", width=200)
 url_aws = "http://35.180.145.185:80"
 
 
+
 # Chargement du jeu de données servi pout l'entrainement (finir cette partie)
 #train = pd.read_csv('df_train.csv')
 
 # Choix de l'identifiant
 st.sidebar.header("Choix du client")
+<<<<<<< HEAD
 res_id = requests.get(f"{url_aws}/clients",verify=False)
+=======
+res_id = requests.get("http://127.0.0.1:8000/clients")
+>>>>>>> 371bdd528d3a8878bb8450d69f75c63b58a38630
 id_client = res_id.json()["id_clients"]
 id_selected = st.sidebar.selectbox("Choix de l'id du client", options=id_client)
 
 # La liste déroulante des features
+<<<<<<< HEAD
 res_col = requests.get(f"{url_aws}/columns",verify=False)
 res_description = requests.get(f"{url_aws}/description_columns",verify=False)
+=======
+#option_features = st.sidebar.selectbox('Sélection ta variable 1',tuple(liste_cols))
+# Appeler la route qui retourne la liste des colonnes
+res_col = requests.get("http://127.0.0.1:8000/columns")
+res_description = requests.get("http://127.0.0.1:8000/description_columns")
+>>>>>>> 371bdd528d3a8878bb8450d69f75c63b58a38630
 columns = res_col.json()["columns"]
 description = res_description.json()["description_columns"]
 
@@ -65,7 +78,11 @@ inputs = {"id_client" : id_selected}
 
 #---------------------------------------------
 ## Les infos du clients 
+<<<<<<< HEAD
 response_client = requests.get(f"{url_aws}/client/{id_selected}",verify=False)
+=======
+response_client = requests.get(f"http://127.0.0.1:8000/client/{id_selected}")
+>>>>>>> 371bdd528d3a8878bb8450d69f75c63b58a38630
 
 def formatage_date(chaine):
     date_ref = datetime.datetime(1970, 1, 1)
@@ -105,8 +122,13 @@ st.sidebar.header("Graphiques")
 
 if st.sidebar.button("Graphique univarié") :
     
+<<<<<<< HEAD
     response1 = requests.get(f"{url_aws}/column/{columns_selected1}",verify=False)
     response2 = requests.get(f"{url_aws}/column/{columns_selected2}",verify=False)
+=======
+    response1 = requests.get(f"http://127.0.0.1:8000/column/{columns_selected1}")
+    response2 = requests.get(f"http://127.0.0.1:8000/column/{columns_selected2}")
+>>>>>>> 371bdd528d3a8878bb8450d69f75c63b58a38630
     
     if response1.status_code == 200 and response2.status_code == 200:
         # Récupérer les données de la réponse
@@ -174,8 +196,13 @@ if st.sidebar.button("Graphique univarié") :
 # On affiche les graphique bivariée des deux variables choisies
 if st.sidebar.button("Graphique bivariée") :
     
+<<<<<<< HEAD
     response1 = requests.get(f"{url_aws}/column/{columns_selected1}",verify=False)
     response2 = requests.get(f"{url_aws}/column/{columns_selected2}",verify=False)
+=======
+    response1 = requests.get(f"http://127.0.0.1:8000/column/{columns_selected1}")
+    response2 = requests.get(f"http://127.0.0.1:8000/column/{columns_selected2}")
+>>>>>>> 371bdd528d3a8878bb8450d69f75c63b58a38630
 
     # Afficher les colonnes dans l'interface utilisateur
     # Vérifier le code de retour de la réponse
@@ -243,7 +270,11 @@ if st.sidebar.button("Features importance") :
     shap_explainer = dill.load(open("shap_explainer.dill","rb"))
 
 
+<<<<<<< HEAD
     response = requests.get(f"{url_aws}/get_X_test",verify=False)
+=======
+    response = requests.get("http://127.0.0.1:8000/get_X_test")
+>>>>>>> 371bdd528d3a8878bb8450d69f75c63b58a38630
     if response.status_code == 200:
         
         X_test = response.json()["data"] 
