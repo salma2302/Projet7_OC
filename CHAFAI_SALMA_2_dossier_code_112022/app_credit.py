@@ -128,8 +128,8 @@ def predict(id_client: int):
     seuil_optimal = 0.62
     
     y_pred = classifier.predict(X_test)
-    y_pred[pred_proba[:,0] > seuil_optimal] = 0
-    y_pred[pred_proba[:,0] <= seuil_optimal] = 1
+    y_pred[pred_proba[:,1] > seuil_optimal] = 1
+    y_pred[pred_proba[:,1] <= seuil_optimal] = 0
     
     # La prédiction en fonction du seuil
     prediction_label = ["accordé" if y_pred == 0 else "refusé"]
