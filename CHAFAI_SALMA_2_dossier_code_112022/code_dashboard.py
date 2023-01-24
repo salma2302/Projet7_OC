@@ -18,12 +18,12 @@ st.title("Prédiction de l'accord d'un crédit d'un client ")
 st.markdown(":tada: Cette application affiche si on accorde ou non un prêt à un client ")
 
 
-#--------------image-----------------------------------------
-img = "photo_entreprise.png"
-st.image(img, width=200)
+#--------------image----------------------------------------- 
+st.image("photo_entreprise.png", width=200)
 
 
-
+# L'URL de l'application fastapi sur AWS
+url_aws = "http://35.180.145.185:80"
 
 
 # Chargement du jeu de données servi pout l'entrainement (finir cette partie)
@@ -31,15 +31,13 @@ st.image(img, width=200)
 
 # Choix de l'identifiant
 st.sidebar.header("Choix du client")
-res_id = requests.get("http://localhost:8000/clients")
+res_id = requests.get(f"{url_aws}/clients",verify=False)
 id_client = res_id.json()["id_clients"]
 id_selected = st.sidebar.selectbox("Choix de l'id du client", options=id_client)
 
 # La liste déroulante des features
-#option_features = st.sidebar.selectbox('Sélection ta variable 1',tuple(liste_cols))
-# Appeler la route qui retourne la liste des colonnes
-res_col = requests.get("http://localhost:8000/columns")
-res_description = requests.get("http://localhost:8000/description_columns")
+res_col = requests.get(f"{url_aws}/columns",verify=False)
+res_description = requests.get(f"{url_aws}/description_columns",verify=False)
 columns = res_col.json()["columns"]
 description = res_description.json()["description_columns"]
 
@@ -67,7 +65,7 @@ inputs = {"id_client" : id_selected}
 
 #---------------------------------------------
 ## Les infos du clients 
-response_client = requests.get(f"http://localhost:8000/client/{id_selected}")
+response_client = requests.get(f"{url_aws}/client/{id_selected}",verify=False)
 
 def formatage_date(chaine):
     date_ref = datetime.datetime(1970, 1, 1)
@@ -86,7 +84,7 @@ if response_client.status_code == 200:
     client_data = pd.DataFrame.from_dict(client_data, orient='index').transpose()
     #st.write(client_data)
 else:
-    st.error("Error getting client data")
+    st.write("Erreur: la requête a échoué avec le code d'état", response_client.status_code)
     
 #---------------------------------------------
 
@@ -107,8 +105,8 @@ st.sidebar.header("Graphiques")
 
 if st.sidebar.button("Graphique univarié") :
     
-    response1 = requests.get(f"http://localhost:8000/column/{columns_selected1}")
-    response2 = requests.get(f"http://localhost:8000/column/{columns_selected2}")
+    response1 = requests.get(f"{url_aws}/column/{columns_selected1}",verify=False)
+    response2 = requests.get(f"{url_aws}/column/{columns_selected2}",verify=False)
     
     if response1.status_code == 200 and response2.status_code == 200:
         # Récupérer les données de la réponse
@@ -176,8 +174,8 @@ if st.sidebar.button("Graphique univarié") :
 # On affiche les graphique bivariée des deux variables choisies
 if st.sidebar.button("Graphique bivariée") :
     
-    response1 = requests.get(f"http://localhost:8000/column/{columns_selected1}")
-    response2 = requests.get(f"http://localhost:8000/column/{columns_selected2}")
+    response1 = requests.get(f"{url_aws}/column/{columns_selected1}",verify=False)
+    response2 = requests.get(f"{url_aws}/column/{columns_selected2}",verify=False)
 
     # Afficher les colonnes dans l'interface utilisateur
     # Vérifier le code de retour de la réponse
@@ -216,11 +214,19 @@ if st.sidebar.button("Graphique bivariée") :
 st.sidebar.header("Prédiction")
 
 if st.sidebar.button("predict") :
-    res = requests.post(url = "http://127.0.0.1:8000/predict", params=inputs)
-    prediction = res.json()
+    headers = {'Content-type': 'application/json'}
+    res = requests.post(f"{url_aws}/predict", params=inputs,verify=False, headers=headers)
+    #res = requests.post(f"{url_aws}/predict", params=inputs,verify=False)
     
-    
-    st.success(f"Le crédit est {prediction['prediction']} avec une proba de {prediction['probabilité']} basée sur un seuil optimal {prediction['seuil_optimal']} pour le client avec l'id {id_selected}")
+    if res.status_code == 200:
+        prediction = res.json()
+        
+        st.success(f"Le crédit est {prediction['prediction']} avec une proba de {prediction['probabilité']} basée sur un seuil optimal {prediction['seuil_optimal']} pour le client avec l'id {id_selected}")
+        
+        
+    else :
+        st.write("Erreur: la requête a échoué avec le code d'état", res.status_code)
+        
     
        
 
@@ -237,7 +243,7 @@ if st.sidebar.button("Features importance") :
     shap_explainer = dill.load(open("shap_explainer.dill","rb"))
 
 
-    response = requests.get("http://localhost:8000/get_X_test")
+    response = requests.get(f"{url_aws}/get_X_test",verify=False)
     if response.status_code == 200:
         
         X_test = response.json()["data"] 
@@ -252,7 +258,7 @@ if st.sidebar.button("Features importance") :
         st.subheader("Interprétabilité globale")
         st.pyplot(shap.summary_plot(shap_values, X_test, feature_names=X_test.columns.tolist()))
         
-        st.subheader(f"Interprétabilité globale : Pour le client {id_selected}")
+        st.subheader(f"Interprétabilité locale : Pour le client {id_selected}")
         shap_val = shap_explainer.shap_values(client_data)
         # Créer un trace Plotly avec les données de l'explication SHAP
 
