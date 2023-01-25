@@ -18,9 +18,13 @@ features_selected=pickle.load(open("features_selected.pkl","rb"))
 features_description=pickle.load(open("features_description.pkl","rb"))
 
 
+@app.get("/")
+async def root():
+    return {"message": "Bienvenue dans l'Api d'accord de crédit"}
 
-#------------------------- Autre Méthode --------------------------------------------------------
-# Chargement du modèle, du jeu de données et des features choisis
+
+#--------------------------------------------------------------------------------
+# Chargement du modèle et du jeu de données 
 @app.get("/data")
 def get_dataframe():
     # sélectionner les colonnes spécifiées du DataFrame
@@ -170,4 +174,4 @@ def get_X_test():
 
 
 if __name__ == '__main__':
-    uvicorn.run("app_credit:app", host='127.0.0.1', port=8000)
+    uvicorn.run("app_credit:app", host='0.0.0.0', port=80)
