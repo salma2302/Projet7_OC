@@ -243,7 +243,8 @@ if st.sidebar.button("predict") :
 
     
         st.success(f"Le crédit est {pred_class} avec une proba de {proba} basée sur un seuil optimal {seuil_optimal} pour le client avec l'id {id_selected}")
-        
+        st.write("La première valeur représente la proba d'appartenir à la classe des clients qui remboursent et la deuxième valeur représente la proba d'appartenir à la classe des clients qui ne rembourssent pas"
+        st.write("Si la deuxième probabilité est supérieur à 0.37 le crédit est refusé sinon il est accepté)
         
     else :
         st.write("Erreur: la requête a échoué avec le code d'état", res.status_code)
