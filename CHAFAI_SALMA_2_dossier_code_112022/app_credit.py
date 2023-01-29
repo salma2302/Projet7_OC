@@ -11,6 +11,9 @@ from fastapi.exceptions import HTTPException
 # 2. Create the app object
 app = FastAPI()
 
+pickle_in = open("model_credit.pkl","rb")
+classifier=pickle.load(pickle_in)
+
 
 
 features_selected=pickle.load(open("features_selected.pkl","rb"))
@@ -141,7 +144,7 @@ def predict(id_client:int):
     if X_test.empty:
         raise HTTPException(status_code=404, detail=f"Client with id_client {id_client} not found")
     
-    classifier = get_model()['model']
+  
     
     # Prédire la probabilité pour le client
     pred_proba = classifier.predict_proba(X_test)
