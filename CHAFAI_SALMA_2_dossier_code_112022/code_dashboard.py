@@ -2,7 +2,8 @@ import streamlit as st
 import json
 import requests
 import pandas as pd
-import datetime
+from datetime import datetime
+import datetime as dt 
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
@@ -13,9 +14,9 @@ import pickle
 import dill
 
 
-st.title("Prédiction de l'accord d'un crédit d'un client ")
+st.title("Application de prédiction d'octroi de crédit")
 #st.subheader("Données des cliens")
-st.markdown(":tada: Cette application affiche si on accorde ou non un prêt à un client ")
+st.markdown(":tada: Cette application affiche si on accorde ou non un prêt pour chaque client idéntifé par son identifiant et affiche le taux de proba")
 
 
 #--------------image----------------------------------------- 
@@ -67,14 +68,31 @@ inputs = {"id_client" : id_selected}
 ## Les infos du clients 
 response_client = requests.get(f"{url_aws}/client/{id_selected}",verify=False)
 
-def formatage_date(chaine):
-    date_ref = datetime.datetime(1970, 1, 1)
-    date = date_ref + datetime.timedelta(days=chaine)
+#------------------ Formatage des dates -----------------------------------------------------------
+
+def formatage_date(date_jours):
+    date_ref = datetime(2018, 5, 18)
+    date = date_ref + dt.timedelta(days=date_jours)
     
     date_f = date.strftime('%Y-%m-%d')
     
     return date_f
 
+res = formatage_date(-8000)
+
+def formatage_age(date_jours):
+    date_ref = datetime(2018, 5, 18)
+    date = date_ref + dt.timedelta(days=date_jours)
+    
+
+    
+    age = date_ref.year - date.year
+    
+    
+    
+    return str(age) + " ans"
+
+#----------------------------------------------------------------------------------------------------
 
 # vérifier si la réponse est valide
 if response_client.status_code == 200:
@@ -94,7 +112,7 @@ else:
 if st.button("Informations_client") :
     st.subheader('Voici les infos du client')
     affichage = client_data.copy()
-    affichage['DAYS_BIRTH'] = affichage['DAYS_BIRTH'].apply(lambda x : formatage_date(x))
+    affichage['DAYS_BIRTH'] = affichage['DAYS_BIRTH'].apply(lambda x : formatage_age(x))
     affichage['DAYS_EMPLOYED'] = affichage['DAYS_EMPLOYED'].apply(lambda x : formatage_date(x))
     affichage = affichage.T.reset_index()
     affichage.columns = ['Nom_variable', 'Valeur']
@@ -214,14 +232,16 @@ if st.sidebar.button("Graphique bivariée") :
 st.sidebar.header("Prédiction")
 
 if st.sidebar.button("predict") :
-    headers = {'Content-type': 'application/json'}
-    res = requests.post(f"{url_aws}/predict", params=inputs,verify=False, headers=headers)
-    #res = requests.post(f"{url_aws}/predict", params=inputs,verify=False)
+    res = requests.get(f"{url_aws}/predict/{id_selected}", params=inputs, verify=False)
     
     if res.status_code == 200:
         prediction = res.json()
         
-        st.success(f"Le crédit est {prediction['prediction']} avec une proba de {prediction['probabilité']} basée sur un seuil optimal {prediction['seuil_optimal']} pour le client avec l'id {id_selected}")
+        pred_class = prediction['prediction']
+        proba = prediction['probabilité']
+        seuil_optimal = prediction['seuil_optimal']
+    
+        st.success(f"Le crédit est {pred_class} avec une proba de {proba} basée sur un seuil optimal {seuil_optimal} pour le client avec l'id {id_selected}")
         
         
     else :
