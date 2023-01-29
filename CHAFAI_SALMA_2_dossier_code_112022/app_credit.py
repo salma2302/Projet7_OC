@@ -11,8 +11,8 @@ from fastapi.exceptions import HTTPException
 # 2. Create the app object
 app = FastAPI()
 
-pickle_in = open("model_credit.pkl","rb")
-classifier=pickle.load(pickle_in)
+
+classifier= dill.load(open("model_credit.pkl","rb"))
 
 
 
