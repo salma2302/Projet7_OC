@@ -1,5 +1,4 @@
 # 1. Library imports
-# Import Needed Libraries
 import joblib
 import uvicorn
 import numpy as np
@@ -7,24 +6,29 @@ import pandas as pd
 import pickle
 import dill
 from fastapi import FastAPI
+from fastapi.exceptions import HTTPException
 
 # 2. Create the app object
 app = FastAPI()
 
-# Initialize model artifacte files. This will be loaded at the start of FastAPI model server.
-#pickle_in = open("model_credit_fr.pkl","rb")
-#classifier=pickle.load(pickle_in)
+
+
 features_selected=pickle.load(open("features_selected.pkl","rb"))
 features_description=pickle.load(open("features_description.pkl","rb"))
 
 
+# Message de bienvenue
+@app.get("/")
+def message():
+    return {"message": "Bienvenue dans l'Api d'accord de crédit d'un client"}
 
-#------------------------- Autre Méthode --------------------------------------------------------
-# Chargement du modèle, du jeu de données et des features choisis
+
+
+#---------------------------------------------------------------------------------
+# Chargement du modèle et du jeu de données
 @app.get("/data")
 def get_dataframe():
-    # sélectionner les colonnes spécifiées du DataFrame
-    # Chargement d'un échantillon de 100 clients
+    # Chargement d'un échantillon de 200 clients
     df = pd.read_csv('echantillon.csv')
     features_selected=pickle.load(open("features_selected.pkl","rb"))
     
@@ -94,9 +98,6 @@ def columns_route():
 @app.get("/column/{column_name}")
 def column_route(column_name: str):
     
-    
-
-
     # Récupérer la valeur de la colonne
     column_values = df[column_name].values.tolist()
 
@@ -110,42 +111,9 @@ def column_route(column_name: str):
 
 
 
-# 4. Route with a single parameter, returns the parameter within a message
-#    Located at: http://127.0.0.1:8000/AnyNameHere
-@app.post('/predict')
-def predict(id_client: int):
-    # On récupère les informations du client
-    
-    ligne = df[df['SK_ID_CURR'] == id_client]
-    X_test = ligne[features_selected]
-    
-    classifier = get_model()['model']
-    
-    # Prédire la probabilité pour le client
-    pred_proba = classifier.predict_proba(X_test)
-
-    # Le seuil choisit avec la fonction personnalisée
-    seuil_optimal = 0.62
-    
-    y_pred = classifier.predict(X_test)
-    y_pred[pred_proba[:,1] > seuil_optimal] = 1
-    y_pred[pred_proba[:,1] <= seuil_optimal] = 0
-    
-    # La prédiction en fonction du seuil
-    prediction_label = ["accordé" if y_pred == 0 else "refusé"]
-    
-    
-    
-    # Return la prédiction au client avec la proba associé
-    return {"prediction": prediction_label[0],
-           "probabilité" : max(pred_proba[0]),
-           "seuil_optimal" : seuil_optimal}
-
-
+# --------------- Récupération du X_test -----------------------------------------------------
 @app.get("/get_X_test")
 def get_X_test():
-    # sélectionner les colonnes spécifiées du DataFrame
-    # Chargement d'un échantillon de 100 clients
     
    
     
@@ -161,6 +129,50 @@ def get_X_test():
 
 
 
+#---------------- Prédictions --------------------------------------------------------------
+@app.get("/predict/{id_client}")
+def predict(id_client:int):
+    # On récupère les informations du client
+    
+    ligne = df[df['SK_ID_CURR'] == id_client]
+    X_test = ligne[features_selected]
+    
+    if X_test.empty:
+        raise HTTPException(status_code=404, detail=f"Client with id_client {id_client} not found")
+    
+    classifier = get_model()['model']
+    
+    # Prédire la probabilité pour le client
+    pred_proba = classifier.predict_proba(X_test)
+
+    # Le seuil choisit avec la fonction personnalisée
+    seuil_optimal = 0.37
+    
+    y_pred = classifier.predict(X_test)
+    
+    pred_proba1 = pred_proba[0][1]
+
+    
+    # La prédiction en fonction du seuil
+    prediction_label = ["refusé" if pred_proba1 > seuil_optimal else "accepté"]
+    
+    if prediction_label[0] == "accordé" :
+        proba = pred_proba[0][0]
+    else :
+        proba = pred_proba[0][1]
+        
+    
+    
+    # Return la prédiction au client avec la proba associé
+    return {"prediction": prediction_label[0],
+           "probabilité" : pred_proba,
+           "seuil_optimal" : seuil_optimal}
+
+
+
+
+
+
 
 
 
@@ -170,4 +182,4 @@ def get_X_test():
 
 
 if __name__ == '__main__':
-    uvicorn.run("app_credit:app", host='127.0.0.1', port=8000)
+    uvicorn.run("app_credit:app", host="0.0.0.0", port=80)
