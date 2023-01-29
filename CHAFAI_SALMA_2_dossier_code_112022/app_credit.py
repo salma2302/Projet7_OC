@@ -17,6 +17,7 @@ features_selected=pickle.load(open("features_selected.pkl","rb"))
 features_description=pickle.load(open("features_description.pkl","rb"))
 
 
+
 # Message de bienvenue
 @app.get("/")
 def message():
@@ -24,8 +25,8 @@ def message():
 
 
 
-#---------------------------------------------------------------------------------
-# Chargement du modèle et du jeu de données
+#--------------------------------------------------------------------------------
+# Chargement du modèle et du jeu de données 
 @app.get("/data")
 def get_dataframe():
     # Chargement d'un échantillon de 200 clients
