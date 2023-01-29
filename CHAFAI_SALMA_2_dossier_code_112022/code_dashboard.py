@@ -238,8 +238,13 @@ if st.sidebar.button("predict") :
         prediction = res.json()
         
         pred_class = prediction['prediction']
-        proba = prediction['probabilité']
+        proba_pred = prediction['probabilité']
         seuil_optimal = prediction['seuil_optimal']
+        
+        if proba_pred[0] == "accordé" :
+            proba = pred_proba[0][0]
+        else :
+            proba = pred_proba[0][1]
     
         st.success(f"Le crédit est {pred_class} avec une proba de {proba} basée sur un seuil optimal {seuil_optimal} pour le client avec l'id {id_selected}")
         
