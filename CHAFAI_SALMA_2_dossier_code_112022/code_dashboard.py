@@ -238,17 +238,28 @@ if st.sidebar.button("predict") :
         prediction = res.json()
         
         pred_class = prediction['prediction']
-        proba = prediction['probabilité']
+        dico_proba = prediction['probabilité']
         seuil_optimal = prediction['seuil_optimal']
+        
+        for key, value in dico_proba.items():
+            proba1 = round(float(key), 2)
+            proba2 = round(value,2)
+            
+        list_proba = [proba1,proba2] 
+        
+        if pred_class == "accepté" :
+            proba = proba1
+        else :
+            proba = proba2
 
     
-        st.success(f"Le crédit est {pred_class} avec une proba de {proba} basée sur un seuil optimal {seuil_optimal} pour le client avec l'id {id_selected}")
+        st.success(f"Le crédit est {pred_class} avec une proba de {proba} pour le client avec l'id {id_selected}")
         
         st.subheader("Explication du résultat")
         
-        
-        st.write("La première valeur représente la probabilité d'appartenir à la classe des clients qui remboursent et la deuxième valeur représente la proba d'appartenir à la classe des clients qui ne remboursent pas")
-        st.write("Si la deuxième probabilité est supérieur à 0.37 le crédit est refusé sinon il est accepté")
+        st.write(f"Voici le résultat en détails : {list_proba}")
+        st.write("La première valeur représente la probabilité d'appartenir à la classe des clients qui remboursent et la deuxième valeur représente la probabilité d'appartenir à la classe des clients qui ne remboursent pas")
+        st.write("Si la deuxième probabilité est supérieur strictement à 0.37 le crédit est refusé sinon il est accepté")
         
     else :
         st.write("Erreur: la requête a échoué avec le code d'état", res.status_code)
