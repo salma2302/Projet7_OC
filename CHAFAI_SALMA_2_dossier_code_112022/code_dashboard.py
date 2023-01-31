@@ -242,8 +242,8 @@ if st.sidebar.button("predict") :
         seuil_optimal = prediction['seuil_optimal']
         
         for key, value in dico_proba.items():
-            proba1 = round(float(key), 2)
-            proba2 = round(value,2)
+            proba1 = round(float(key), 3)
+            proba2 = round(value,3)
             
         list_proba = [proba1,proba2] 
         
