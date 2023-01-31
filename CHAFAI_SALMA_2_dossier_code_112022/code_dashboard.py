@@ -248,12 +248,12 @@ if st.sidebar.button("predict") :
         list_proba = [proba1,proba2] 
         
         if pred_class == "accepté" :
-            proba = proba1
+            prob = proba1
         else :
-            proba = proba2
+            prob = proba2
 
     
-        st.success(f"Le crédit est {pred_class} avec une proba de {proba} pour le client avec l'id {id_selected}")
+        st.success(f"Le crédit est {pred_class} avec une proba de {prob} pour le client avec l'id {id_selected}")
         
         st.subheader("Explication du résultat")
         
